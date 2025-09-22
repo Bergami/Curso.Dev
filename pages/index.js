@@ -1,8 +1,8 @@
 function HomePage() {
   return (
     <div className="container">
-      <h1>Welcome to Curso.dev</h1>
-      <p>Learn about the latest technologies and improve your skills.</p>
+      <h1>Bem vindo a minha página</h1>
+      <p>Página em desenvolvimento para aprendizado de novas tecnologias.</p>
       <style jsx>{`
         .container {
           display: flex;
