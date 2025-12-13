@@ -1,0 +1,9 @@
+services:
+  database:
+    image: "postgres:16-alpine3.23"
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: wander.bergami
+      POSTGRES_PASSWORD: Wvb@2025
+      POSTGRES_DB: curso_dev
