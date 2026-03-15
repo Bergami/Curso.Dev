@@ -1,0 +1,5 @@
+{
+  "migrations-dir": "infra/migrations",
+  "migrations-table": "pgmigrations",
+  "schema": "public"
+}

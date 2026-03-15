@@ -8,4 +8,6 @@ module.exports = {
     "^@/(.*)$": "<rootDir>/$1",
   },
   rootDir: ".",
+  // Garante que os testes de setup rodem primeiro
+  testSequencer: "./tests/sequencer.js",
 };
