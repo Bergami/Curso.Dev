@@ -11,8 +11,8 @@ Este projeto implementa uma estratégia de testes robusta que garante a integrid
 - `npm run test` - Executa todos os testes (setup + unitários + integração)
 - `npm run test:unit` - Executa apenas testes unitários (ignora integration/)
 - `npm run test:integration` - Executa apenas testes de integração
-- `npm run test:setup` - Reset DB + Migrações + Testes unitários
-- `npm run test:full` - Reset DB + Migrações + Todos os testes
+- `npm run test:setup` - Sobe serviços + Testes unitários (setup faz reset+migrações)
+- `npm run test:full` - Sobe serviços + Todos os testes (setup faz reset+migrações)
 
 ### Scripts de Banco de Dados
 
@@ -24,7 +24,7 @@ Este projeto implementa uma estratégia de testes robusta que garante a integrid
 
 ### 1. Reset do Banco
 
-O script `reset-test-db.js` faz:
+O script `reset-test-db.ts` faz:
 
 - Conecta no PostgreSQL server
 - Termina conexões ativas no banco de teste
@@ -39,7 +39,7 @@ O script `reset-test-db.js` faz:
 
 ### 3. Testes de Setup
 
-O arquivo `tests/setup/database.test.js` verifica:
+O arquivo `tests/setup/database.test.ts` verifica:
 
 - ✅ Reset do banco executado com sucesso
 - ✅ Migrações aplicadas corretamente
@@ -53,16 +53,16 @@ O arquivo `tests/setup/database.test.js` verifica:
 ```env
 NODE_ENV=test
 POSTGRES_HOST=localhost
-POSTGRES_PORT=5433
+POSTGRES_PORT=5434
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
 POSTGRES_DB=cursodev_test
-DATABASE_URL=postgres://postgres:postgres@localhost:5433/cursodev_test
+DATABASE_URL=postgresql://postgres:postgres@localhost:5434/cursodev_test
 ```
 
 ### Sequenciador de Testes
 
-O arquivo `tests/sequencer.js` garante que:
+O arquivo `tests/sequencer.cjs` garante que:
 
 1. **Testes de setup rodem primeiro** (pasta `/setup/`)
 2. Demais testes sigam ordem alfabética
@@ -123,10 +123,10 @@ npm run test:setup
 ```
 tests/
 ├── setup/
-│   └── database.test.js    # Testes de configuração do banco
+│   └── database.test.ts    # Testes de configuração do banco
 ├── integration/
 │   └── api/                # Testes que precisam do servidor rodando
-└── sequencer.js           # Controla ordem de execução
+└── sequencer.cjs          # Controla ordem de execução
 ```
 
 ## Troubleshooting

@@ -5,6 +5,7 @@
 ## 🚀 Tecnologias Utilizadas
 
 - **Next.js 15** - Framework React para produção
+- **TypeScript 5** - Tipagem estática e tooling moderno
 - **PostgreSQL** - Banco de dados relacional
 - **Docker** - Containerização dos serviços
 - **Jest** - Framework de testes
@@ -17,18 +18,19 @@
 ├── pages/
 │   └── api/v1/status/       # API de status do sistema
 ├── infra/
-│   ├── database.js          # Configuração do banco de dados
+│   ├── database.ts          # Configuração do banco de dados
+│   ├── run-migrations.ts    # Runner programático de migrações
 │   ├── compose.yml          # Docker compose para serviços
 │   └── migrations/          # Arquivos de migração do banco
 ├── tests/
 │   ├── setup/               # Testes de configuração (executam primeiro)
 │   ├── integration/         # Testes de integração
-│   ├── sequencer.js         # Controlador de ordem dos testes
+│   ├── sequencer.cjs        # Controlador de ordem dos testes
 │   └── README.md           # Documentação dos testes
 ├── scripts/
-│   ├── reset-dev-db.js      # Reset do banco de desenvolvimento
-│   ├── reset-test-db.js     # Reset do banco de teste
-│   └── queries_status.js    # Queries para status da API
+│   ├── reset-dev-db.ts      # Reset do banco de desenvolvimento
+│   ├── reset-test-db.ts     # Reset do banco de teste
+│   └── queries_status.ts    # Queries para status da API
 ├── models/                  # Modelos de dados
 └── ...
 ```
@@ -141,11 +143,12 @@ npm run dev:migration:down # Desfaz última migração no banco dev
 
 ```bash
 npm test                   # Todos os testes (requer banco configurado)
-npm run test:setup         # Setup + testes unitários (recomendado)
-npm run test:full          # Reset + migrações + todos os testes
+npm run test:setup         # Sobe serviços + testes unitários (setup faz reset+migrações)
+npm run test:full          # Sobe serviços + todos os testes (setup faz reset+migrações)
 npm run test:unit          # Apenas testes unitários
 npm run test:integration   # Apenas testes de integração
 npm run test:watch         # Modo watch dos testes
+npm run typecheck          # Verificação estática TypeScript
 ```
 
 ### 🐳 **Gerenciamento de Serviços**
@@ -290,6 +293,13 @@ GET /api/v1/status
 ```
 
 ## 📚 **Arquitetura e Boas Práticas**
+
+### **TypeScript + ESM**
+
+- **Runtime principal**: ESM (`"type": "module"` em `package.json`)
+- **Código da aplicação**: `.ts` / `.tsx`
+- **Jest**: config em `jest.config.cjs` para compatibilidade do runner
+- **Execução de scripts TS**: via `tsx`
 
 ### **Gerenciamento de Ambiente**
 

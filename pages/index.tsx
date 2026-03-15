@@ -1,4 +1,4 @@
-function HomePage() {
+export default function HomePage() {
   return (
     <div className="container">
       <h1>Bem vindo a minha página</h1>
@@ -15,10 +15,12 @@ function HomePage() {
           font-family: Arial, sans-serif;
           text-align: center;
         }
+
         h1 {
           font-size: 3rem;
           margin-bottom: 1rem;
         }
+
         p {
           font-size: 1.5rem;
           max-width: 600px;
@@ -27,5 +29,3 @@ function HomePage() {
     </div>
   );
 }
-
-export default HomePage;
