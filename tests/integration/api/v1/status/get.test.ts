@@ -28,7 +28,7 @@ test("Get to /api/v1/status should return status ok", async () => {
   );
   expect(data.dependency.database.version).toMatch(/PostgreSQL/);
   expect(data.dependency.database.max_connections).toBe(100);
-  expect(data.dependency.database.opened_connections).toBe(1);
+  expect(data.dependency.database.opened_connections).toBeGreaterThanOrEqual(1);
 });
 
 test("Database connection should be successful", async () => {

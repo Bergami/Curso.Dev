@@ -63,7 +63,6 @@ POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
 POSTGRES_DB=cursodev_development
 SSL=false
-DATABASE_URL=postgresql://postgres:postgres@localhost:5433/cursodev_development
 ```
 
 ### `.env.test` - Ambiente de Testes
@@ -76,7 +75,31 @@ POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
 POSTGRES_DB=cursodev_test
 SSL=false
-DATABASE_URL=postgresql://postgres:postgres@localhost:5434/cursodev_test
+```
+
+> `DATABASE_URL` e montada automaticamente em runtime a partir de `POSTGRES_*`.
+
+### FAQ de Configuracao (DATABASE_URL)
+
+**Preciso chamar `DATABASE_URL` manualmente no codigo?**
+
+Nao. O loader de ambiente monta `process.env.DATABASE_URL` automaticamente quando ela nao existe, usando `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_USER`, `POSTGRES_PASSWORD` e `POSTGRES_DB`.
+
+**Quando devo definir `DATABASE_URL` manualmente?**
+
+Defina manualmente apenas quando um ambiente externo ja entrega essa variavel pronta (por exemplo, deploy/hosted database) ou quando voce quiser forcar uma conexao especifica sem usar os campos `POSTGRES_*`.
+
+**Como isso e usado na pratica neste projeto?**
+
+- A conexao principal da aplicacao usa `POSTGRES_*`.
+- Fluxos de migracao/CLI podem ler `DATABASE_URL`.
+- Se `DATABASE_URL` ja vier definida, o projeto respeita esse valor e nao sobrescreve.
+
+Exemplo de override manual (PowerShell):
+
+```powershell
+$env:DATABASE_URL = "postgresql://usuario:senha@localhost:5433/cursodev_development"
+npm run migration:up
 ```
 
 ## 🛠️ Instalação e Configuração
@@ -144,7 +167,7 @@ npm run dev:migration:down # Desfaz última migração no banco dev
 ```bash
 npm test                   # Todos os testes (requer banco configurado)
 npm run test:setup         # Sobe serviços + testes unitários (setup faz reset+migrações)
-npm run test:full          # Sobe serviços + todos os testes (setup faz reset+migrações)
+npm run test:full          # Sobe Docker + servidor + todos os testes (fluxo completo)
 npm run test:unit          # Apenas testes unitários
 npm run test:integration   # Apenas testes de integração
 npm run test:watch         # Modo watch dos testes
@@ -201,10 +224,11 @@ npm run test:full
 **O que acontece:**
 
 1. 🔍 **Sobe banco de teste** (Docker)
-2. 🗑️ **Limpa banco completamente**
-3. 🏗️ **Aplica todas as migrações**
-4. 🧪 **Executa testes** em ambiente limpo
-5. ✅ **Resultado confiável e reproduzível**
+2. 🌐 **Inicia servidor de aplicação** (porta 3001)
+3. 🗑️ **Limpa banco completamente**
+4. 🏗️ **Aplica todas as migrações**
+5. 🧪 **Executa testes** em ambiente limpo
+6. ✅ **Resultado confiável e reproduzível**
 
 ### **Tipos de Teste**
 

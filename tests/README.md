@@ -12,7 +12,7 @@ Este projeto implementa uma estratégia de testes robusta que garante a integrid
 - `npm run test:unit` - Executa apenas testes unitários (ignora integration/)
 - `npm run test:integration` - Executa apenas testes de integração
 - `npm run test:setup` - Sobe serviços + Testes unitários (setup faz reset+migrações)
-- `npm run test:full` - Sobe serviços + Todos os testes (setup faz reset+migrações)
+- `npm run test:full` - Sobe Docker + servidor + Todos os testes (setup faz reset+migrações)
 
 ### Scripts de Banco de Dados
 
@@ -57,8 +57,9 @@ POSTGRES_PORT=5434
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
 POSTGRES_DB=cursodev_test
-DATABASE_URL=postgresql://postgres:postgres@localhost:5434/cursodev_test
 ```
+
+`DATABASE_URL` e montada automaticamente em runtime a partir de `POSTGRES_*`.
 
 ### Sequenciador de Testes
 
@@ -107,7 +108,7 @@ npm run test:setup
 ### Antes de Commit/Deploy
 
 ```bash
-# Teste completo com reset
+# Teste completo com reset e servidor automatico
 npm run test:full
 ```
 

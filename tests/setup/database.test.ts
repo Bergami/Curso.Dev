@@ -1,6 +1,6 @@
 import database from "../../infra/database";
+import { resetDatabase } from "../../infra/db-admin/reset-database";
 import { runMigrationsFromCli } from "../../infra/run-migrations";
-import { resetDatabase } from "../../scripts/reset-database";
 
 interface CountRow {
   count: number;

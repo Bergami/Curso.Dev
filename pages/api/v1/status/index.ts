@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import database from "../../../../infra/database";
+import { STATUS_OK } from "../../../../shared/messages/success-messages";
 import {
   maxConnectionsQuery,
   openedConnectionsQuery,
@@ -19,7 +20,7 @@ interface OpenedConnectionsRow {
 }
 
 interface StatusResponse {
-  status: "ok";
+  status: typeof STATUS_OK;
   updatedAt: string;
   dependency: {
     database: {
@@ -46,7 +47,7 @@ export default async function statusHandler(
     ]);
 
   response.status(200).json({
-    status: "ok",
+    status: STATUS_OK,
     updatedAt,
     dependency: {
       database: {

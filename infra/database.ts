@@ -5,6 +5,7 @@ import {
   type QueryResultRow,
 } from "pg";
 import { getRequiredEnv, loadEnvIfNeeded } from "./env-loader";
+import { DATABASE_QUERY_ERROR_LOG } from "../shared/messages/error-messages";
 
 loadEnvIfNeeded();
 
@@ -32,7 +33,7 @@ export default async function query<T extends QueryResultRow = QueryResultRow>(
   try {
     return await client.query<T>(text, params);
   } catch (error) {
-    console.error("Database query error:", error);
+    console.error(DATABASE_QUERY_ERROR_LOG, error);
     throw error;
   } finally {
     await client.end();

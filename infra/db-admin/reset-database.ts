@@ -1,5 +1,17 @@
 import { Client, type ClientConfig } from "pg";
-import { getRequiredEnv, loadEnvIfNeeded } from "../infra/env-loader";
+import { getRequiredEnv, loadEnvIfNeeded } from "../env-loader";
+import {
+  CONNECTED_TO_POSTGRES_LOG,
+  TERMINATED_ACTIVE_CONNECTIONS_LOG,
+  getInvalidDatabaseNameMessage,
+  getResetDatabaseErrorLog,
+} from "../../shared/messages/error-messages";
+import {
+  getCreatedDatabaseLog,
+  getDatabaseResetCompletedLog,
+  getDroppedDatabaseLog,
+  getStartingDatabaseResetLog,
+} from "../../shared/messages/success-messages";
 
 loadEnvIfNeeded();
 
@@ -18,7 +30,7 @@ function createAdminClientConfig(): ClientConfig {
 
 function assertSafeDatabaseName(databaseName: string): string {
   if (!DATABASE_NAME_PATTERN.test(databaseName)) {
-    throw new Error(`Invalid database name: ${databaseName}`);
+    throw new Error(getInvalidDatabaseNameMessage(databaseName));
   }
 
   return databaseName;
@@ -31,11 +43,11 @@ export async function resetDatabase(
   const safeDatabaseName = assertSafeDatabaseName(databaseName);
   const client = new Client(createAdminClientConfig());
 
-  console.log(`Starting ${label} database reset...`);
+  console.log(getStartingDatabaseResetLog(label));
 
   try {
     await client.connect();
-    console.log("Connected to PostgreSQL server");
+    console.log(CONNECTED_TO_POSTGRES_LOG);
 
     await client.query(
       `
@@ -46,17 +58,17 @@ export async function resetDatabase(
       `,
       [safeDatabaseName],
     );
-    console.log("Terminated active connections");
+    console.log(TERMINATED_ACTIVE_CONNECTIONS_LOG);
 
     await client.query(`DROP DATABASE IF EXISTS "${safeDatabaseName}"`);
-    console.log(`Dropped database: ${safeDatabaseName}`);
+    console.log(getDroppedDatabaseLog(safeDatabaseName));
 
     await client.query(`CREATE DATABASE "${safeDatabaseName}"`);
-    console.log(`Created database: ${safeDatabaseName}`);
+    console.log(getCreatedDatabaseLog(safeDatabaseName));
 
-    console.log(`${label} database reset completed successfully!`);
+    console.log(getDatabaseResetCompletedLog(label));
   } catch (error) {
-    console.error(`Error resetting ${label} database:`, error);
+    console.error(getResetDatabaseErrorLog(label), error);
     throw error;
   } finally {
     await client.end();
