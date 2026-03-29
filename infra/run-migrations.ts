@@ -22,13 +22,19 @@ export type MigrationStatus = {
   lastMigrationName: string | null;
 };
 
+function getMigrationDatabaseUrl(): string {
+  // DATABASE_URL is already built with SSL and channel binding parameters
+  // from env-loader.ts buildDatabaseUrlFromPostgresEnv()
+  return getRequiredEnv("DATABASE_URL");
+}
+
 export async function runMigrations(
   direction: MigrationDirection = "up",
 ): Promise<RunMigration[]> {
   const { runner } = await import("node-pg-migrate");
 
   return runner({
-    databaseUrl: getRequiredEnv("DATABASE_URL"),
+    databaseUrl: getMigrationDatabaseUrl(),
     migrationsTable: "pgmigrations",
     dir: join(process.cwd(), "infra", "migrations"),
     direction,

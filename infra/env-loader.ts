@@ -16,14 +16,29 @@ function buildDatabaseUrlFromPostgresEnv(): string | null {
   const encodedUser = encodeURIComponent(user);
   const encodedPassword = encodeURIComponent(password);
 
-  return `postgresql://${encodedUser}:${encodedPassword}@${host}:${port}/${database}`;
+  const url = new URL(
+    `postgresql://${encodedUser}:${encodedPassword}@${host}:${port}/${database}`,
+  );
+
+  // Add SSL parameters (production defaults: require SSL, dev/test: disable SSL)
+  const isProduction = process.env.NODE_ENV === "production";
+  const sslMode =
+    process.env.POSTGRES_SSL_MODE ?? (isProduction ? "require" : "disable");
+  const channelBinding =
+    process.env.POSTGRES_CHANNEL_BINDING ??
+    (isProduction ? "require" : undefined);
+
+  url.searchParams.set("sslmode", sslMode);
+  if (channelBinding) {
+    url.searchParams.set("channel_binding", channelBinding);
+  }
+
+  return url.toString();
 }
 
 function ensureDatabaseUrlFromPostgresEnv(): void {
-  if (process.env.DATABASE_URL) {
-    return;
-  }
-
+  // Always build DATABASE_URL from POSTGRES_* environment variables.
+  // This ensures the URL is constructed with proper SSL and channel binding parameters.
   // Keep interpolation logic in code to avoid adding dotenv-expand while its
   // dependency range is behind our dotenv major and could introduce ambiguity.
   // TODO: Reevaluate dotenv-expand adoption when compatibility matrix is aligned.
@@ -35,7 +50,7 @@ function ensureDatabaseUrlFromPostgresEnv(): void {
 }
 
 export function loadEnvIfNeeded(): void {
-  if (process.env.POSTGRES_DB || process.env.DATABASE_URL) {
+  if (process.env.POSTGRES_DB) {
     ensureDatabaseUrlFromPostgresEnv();
     return;
   }
@@ -49,7 +64,7 @@ export function loadEnvIfNeeded(): void {
 
   dotenv.config({ path: envFile });
 
-  if (!process.env.POSTGRES_DB && !process.env.DATABASE_URL) {
+  if (!process.env.POSTGRES_DB) {
     dotenv.config({ path: ".env" });
   }
 
