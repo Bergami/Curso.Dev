@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { exec } from "node:child_process";
 import { promisify } from "node:util";
-import { loadEnvIfNeeded, getRequiredEnv } from "../infra/env-loader";
+import { loadEnvIfNeeded } from "../infra/env-loader";
 
 const execAsync = promisify(exec);
 
@@ -9,9 +9,10 @@ async function runMigrations(): Promise<void> {
   // Load environment variables and build DATABASE_URL from POSTGRES_* env vars
   loadEnvIfNeeded();
 
-  // Verify DATABASE_URL is set
-  const databaseUrl = getRequiredEnv("DATABASE_URL");
-  console.log("DATABASE_URL is set. Running migrations...");
+  if (!process.env.POSTGRES_DB) {
+    console.warn("No database credentials found, skipping migrations.");
+    return;
+  }
 
   // Extract command from process.argv (e.g., 'up', 'down', 'status')
   const direction = process.argv[2] || "up";
