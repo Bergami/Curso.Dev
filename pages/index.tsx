@@ -1,7 +1,7 @@
 export default function HomePage() {
   return (
     <div className="container">
-      <h1>Bem vindo a minha página</h1>
+      <h1>Bem vindo ao meu ambiente de testes</h1>
       <p>Página em desenvolvimento para aprendizado de novas tecnologias.</p>
       <style jsx>{`
         .container {
